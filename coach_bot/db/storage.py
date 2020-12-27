@@ -17,8 +17,8 @@ class MongodbService:
         self._client = MongoClient("localhost", 27017)
         self._db = self._client.coach_bot_db
 
-    def get_data(self):
-        return list(self._db.users.find())
+    def get_data_users(self):
+        return list(self._db.users_id.find())
 
     def get_data_chats(self):
         return list(self._db.chats_id.find())

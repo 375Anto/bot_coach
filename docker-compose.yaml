@@ -5,14 +5,16 @@ volumes:
 
 services:
   bot_coach:
-    build: aux_may_be_deleted/Bot_coach
+    build: coach_bot/
+    container_name: bot_coach
+    command: python bot_main.py
     restart: always
     environment:
-      -MONGO_DB_ADDR=mongodb
-      -MONGO_DB_PORT=27017
-      -RESPONSE_DELAY=120
+      - MONGO_DB_ADDR=mongodb
+      - MONGO_DB_PORT=27017
+      - RESPONSE_DELAY=120
   mongodb:
-    image: mongo: latest
+    image: mongo:latest
     volumes:
-    - mongodb_volume: /data/db
+    - mongodb_volume:/data/db
     restart: always

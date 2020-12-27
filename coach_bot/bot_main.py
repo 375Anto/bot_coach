@@ -1,7 +1,7 @@
 import telebot
 from telebot.types import Message
-from coach_bot.config.config import TOKEN, ADMIN_ID
-from coach_bot.db import storage
+from config.config import TOKEN, ADMIN_ID
+from db import storage
 
 bot = telebot.TeleBot(TOKEN, threaded=False)
 storage = storage.MongodbService.get_instance()
@@ -11,10 +11,6 @@ storage = storage.MongodbService.get_instance()
 def command_handler(message: Message):
     text_ru = ''
     text_en = ''
-    dto = {
-        "chat_id": message.chat.id,
-        "user_id": message.from_user.id
-    }
     if message.html_text == '/start':
         storage.save_chat(message.chat.id)
         storage.save_user(message.from_user.id)
@@ -26,9 +22,16 @@ def command_handler(message: Message):
         storage.remove_chat(message.chat.id)
 
     if message.from_user.language_code == 'en':
-        bot.reply_to(message, f"{text_en} \n {chat_ids} \n  {message}")
+        bot.reply_to(message, f"{text_en}")
     else:
         bot.reply_to(message, f"{text_ru}")
+
+
+@bot.message_handler(func=lambda message: message.from_user.id == ADMIN_ID and
+                        message.text == "TOTAL_USERS",
+                     content_types=['text'])
+def repost_to_all(message):  # Название функции не играет никакой роли
+    bot.send_message(ADMIN_ID, f"""{len(storage.get_data_users())}""")
 
 
 @bot.message_handler(func=lambda message: message.from_user.id == ADMIN_ID,
@@ -87,17 +90,11 @@ def repost_to_all(message):  # Название функции не играет
                          f"{message.__dict__[message.content_type].file_id}")
 
 
-@bot.message_handler(func=lambda message: message.from_user.id == ADMIN_ID and
-                        message.text == "All_chats",
-                     content_types=['text'])
+@bot.message_handler(func=lambda message: message.from_user.id != ADMIN_ID,
+                content_types=['audio', 'photo', 'voice', 'video', 'document',
+                                    'text', 'location', 'contact', 'sticker'])
 def repost_to_all(message):  # Название функции не играет никакой роли
-    for chat_id in chat_ids:
-        bot.send_message(chat_id, f"""{users_id}""")
-
-
-@bot.message_handler(content_types=["text"])
-def repeat_all_messages(message):  # Название функции не играет никакой роли
-    bot.send_message(message.chat.id, f'{message.text} \n {message} ')
+    bot.send_message(message.chat.id, 'Я пока не научился отвечать вам')
 
 
 bot.infinity_polling()

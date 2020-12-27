@@ -1,4 +1,4 @@
 /aux_may_be_deleted
 /.idea
 .env
-config.py
+/coach_bot/config
