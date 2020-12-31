@@ -7,7 +7,6 @@ services:
   bot_coach:
     build: coach_bot/
     container_name: bot_coach
-    command: python bot_main.py
     restart: always
     environment:
       - MONGO_DB_ADDR=mongodb

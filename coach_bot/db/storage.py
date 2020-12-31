@@ -1,4 +1,4 @@
-from pymongo import MongoClient
+from pymongo import MongoClient, errors
 
 
 class MongodbService:
@@ -24,13 +24,19 @@ class MongodbService:
         return list(self._db.chats_id.find())
 
     def save_chat(self, dto):
-        return self._db.chats_id.insert_one({"_id": dto})
+        try:
+            self._db.chats_id.insert_one({"_id": dto})
+        except errors.DuplicateKeyError:
+            pass
 
     def save_user(self, dto):
-        return self._db.users_id.insert_one({"_id": dto})
+        try:
+            self._db.users_id.insert_one({"_id": dto})
+        except errors.DuplicateKeyError:
+            pass
 
     def remove_chat(self, dto):
-        return self._db.chats_id.delete_one(dto)
+        self._db.chats_id.delete_one({"_id": dto})
 
     def remove_user(self, dto):
-        return self._db.users_id.delete_one(dto)
+        self._db.users_id.delete_one({"_id": dto})

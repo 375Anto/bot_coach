@@ -6,5 +6,4 @@ COPY . /usr/src/app
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-
-ENTRYPOINT ["python", "bot_main.py"]
+CMD ["python", "bot_main.py"]
